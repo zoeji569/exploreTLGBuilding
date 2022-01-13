@@ -111,7 +111,7 @@ def main():
 
         room_number = int(current_room['name'])
         if room_number == 101:
-            print(f"Nancy: Hello {user_name}, hope your have a happy learning with us!")
+            print(f"Nancy: Hello {user_name}, Happy learning!")
         elif room_number == 102:
             round = 0  # integer round initiated to 0
             while True:  # sets up an infinite loop condition
@@ -136,14 +136,7 @@ def main():
                     break  # break statement escapes the while loop
                 else:  # if answer was wrong, and round is not yet equal to 3
                     print('Sorry. Try again!')
-                # print("Jay: Hi there! Hope you had something yummy today!")
-                # answer = input("Jay: I have a question for you."
-                #                      "Temperature in Rochester,New York on Feb 27th, 2020 was ___ degree °F?")
-                # if answer == 6:
-                #     print("Correct! You have a good memory!")
-                # else:
-                #     print("You've got it wrong. Please review all my recording and book a 1:1 meeting with me, thank you!")
-                #     print("Jay is very mad and kicked you out from his office")
+
         elif room_number == 103:
             learn=input(f"Nelly: Hi {user_name}, what did you learn last night?\nYou:")
             my_learn = open("stuff_i_learnt_yesterday.txt", "w")
@@ -152,26 +145,6 @@ def main():
             my_learn.write(f"Yesterday was: {yesterday}, And I learnt {learn}")
             my_learn.close()
             print("Nelly: Great to hear that! You can see your answer in file named: stuff_i_learnt_yesterday.txt.")
-
-            # player1_dice = []
-            # player2_dice = []
-            #
-            # for i in range(3):
-            #         player1_dice.append(random.randint(1, 6))
-            #         player2_dice.append(random.randint(1, 6))
-            #
-            # print("Nelly rolled" + str(player1_dice))
-            # time.sleep(2)
-            # print(f"{user_name} rolled" + str(player2_dice))
-            # time.sleep(2)
-            #
-            # if sum(player1_dice) == sum(player2_dice):
-            #     print("Draw")
-            # elif sum(player1_dice) > sum(player2_dice):
-            #     print("Nelly wins")
-            # else:
-            #     print("You wins")
-            #
 
         elif room_number == 201:
             print(f"Sam: Hi {user_name}! I hope you enjoyed this course!")
