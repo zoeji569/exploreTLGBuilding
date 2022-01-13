@@ -7,6 +7,7 @@ from datetime import date # used in Room 103
 from datetime import timedelta # used in Room 103
 import crayons # highlight some conversations/words
 import requests # request API from OpenWeatherMap
+import config
 
 
 def main():
@@ -163,11 +164,11 @@ def main():
             city = input("city: ")
             state = input("state: ")
             print(f"John: Great! Wait a second and let me take a look of the weather there.")
-            api_key = "5fe73b72d5a3fb411f6dbf7e97a5b156"
             api_url = "http://api.openweathermap.org/data/2.5/weather?"
-            look_url = api_url + "appid=" + '5fe73b72d5a3fb411f6dbf7e97a5b156' + "&q=" + city + "," + state + ",usa"
+            look_url = api_url + "appid=" + config.api_key + "&q=" + city + "," + state + ",usa"
             response = requests.get(look_url)
             x = response.json()
+            # check for a 200 response
             if x["cod"] == 200:
                     y = x["main"]
                     current_temperature = y["temp"]
