@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
-""" A simple program that allows user to explore TLG building. | Xuan.Ji@tlgcohort.com"""
+""" A simple program that allows user to explore TLG building. | Xuan.Ji@tlgcohort.com  Zicheng.Li@tlgcohort.com"""
 
-# standard library imports
-import time
-from datetime import date
-from datetime import timedelta
-import argparse
-import random # play rock-paper-scissors game in room 103
-
-# 3rd party imports
-import crayons
-import requests
+# imports
+import time # use time.sleep() in conversations
+from datetime import date # used in Room 103
+from datetime import timedelta # used in Room 103
+import crayons # highlight some conversations/words
+import requests # request API from OpenWeatherMap
 
 
 def main():
-
+    ## A dictionary linking a room to other rooms
     rooms = {'lobby': {
                 'name': '100',
                 'available_directions' : 'Left, Right, Up',
@@ -77,12 +73,13 @@ def main():
                 'coins': '0',
                 'words': 'This is snack room. We have some beverages in vending machine.'},
              }
+    # movements
     directions = ['L', 'R', 'U', 'D']
+    # start the player in the lobby
     current_room = rooms['lobby']
     coins = 0
 
     """called at runtime"""
-
     # open building ASCII file in read mode
     with open("ASCII arts/building.txt", "r") as building:
         # indent to keep the building object open
@@ -91,12 +88,14 @@ def main():
             # print and end without a newline
             print(svr, end="")
     print()
+
+    """Show the game instructions when called"""
     def showInstructions():
         print(crayons.cyan('Please use L,R,U,D to move. Press Q to quit game.', bold=True))
     showInstructions()
 
-    user_name=input("Please enter your name: ") # What's your name?
-    print(f"Hello, {user_name}! Welcome to TLG building!") # Welcome to TLG building.
+    user_name=input("Please enter your name: ") # get user's name
+    print(f"Hello, {user_name}! Welcome to TLG building!") # welcome message
     time.sleep(1)
 
     while True:
@@ -104,19 +103,24 @@ def main():
         print()
         print('You are in Room {}.'.format(current_room['name']))
         print(crayons.cyan(current_room['words'], bold=True))
+        # show coins user found in current room
         if current_room['coins']:
-            print("You found :" + current_room['coins'] + " coins!")
+            print(f"You found: " + current_room['coins'] + " coins in this room!")
         coins += int(current_room['coins'])
-        print(f'You\'ve collected {coins} coins')
+        # show total number of coins user have collected since game started
+        print(f'You\'ve collected {coins} coins.')
 
+
+        # different tasks in each room
         room_number = int(current_room['name'])
+        # task in room 101
         if room_number == 101:
             print(f"Nancy: Hello {user_name}, Happy learning!")
+        # task in room 102, user got 3 chances to guess correct numbers.
         elif room_number == 102:
-            round = 0  # integer round initiated to 0
-            while True:  # sets up an infinite loop condition
-                round += 1  # increase the round counter
-
+            round = 0
+            while True:
+                round += 1
                 print("The door is locked... It has a 3-digit password, would you like to guess what it is?")
                 digit_1 = input(
                         "Digit 1 :(Hint:Temperature in Rochester,New York on Feb 27th, 2020 was ___ degree °F. ) Your guess--> ")
@@ -126,7 +130,7 @@ def main():
 
                 if digit_1 == '6' and digit_2 == '5' and digit_3 == '8':  # logic to check if user gave correct answer
                     print('Correct! You unlocked the door and found Jay sitting in there.')
-                    print('Jay: You have a good memory! But I don\'t really people got my door password!')
+                    print('Jay: You have a good memory! But it seems like I need to change my door password!')
                     print(
                             'Jay throw you a book -- <Effective Java> and asked you to read it 10 times. Then Jay kicked you out from his office.')
                     break  # break statement escapes the while loop
@@ -137,18 +141,21 @@ def main():
                 else:  # if answer was wrong, and round is not yet equal to 3
                     print('Sorry. Try again!')
 
+        # task in room 103, user's input will be wrote to file stuff_i_learnt_yesterday.txt.
         elif room_number == 103:
             learn=input(f"Nelly: Hi {user_name}, what did you learn last night?\nYou:")
-            my_learn = open("stuff_i_learnt_yesterday.txt", "w")
+            my_learn = open("stuff_i_learnt_yesterday.txt", "a")
             today = date.today()
             yesterday = today - timedelta(days = 1)
-            my_learn.write(f"Yesterday was: {yesterday}, And I learnt {learn}")
+            my_learn.write(f"\nYesterday was: {yesterday}, {learn}\n")
             my_learn.close()
-            print("Nelly: Great to hear that! You can see your answer in file named: stuff_i_learnt_yesterday.txt.")
-
+            print("Nelly: Great to hear that! You can see your answer in file named: stuff_i_learnt_yesterday.txt.\nNelly: Keep track of everything you're learning, it's a good habit.")
+        # task in room 201
         elif room_number == 201:
             print(f"Sam: Hi {user_name}! I hope you enjoyed this course!")
             print(f"Sam: Sorry I'm busy watching your classmates' project, talk to you later!")
+
+        # task in room 202. Use OpenWeatherMap API to get weather info when user enter City and State.
         elif room_number == 202:
             print(f"John: Hi {user_name}! How are you? I'm planning to go some other city today, "
                       f"do you have any suggestions?")
@@ -182,6 +189,7 @@ def main():
             else:
                     print(" City Not Found ")
 
+        # task in room 203
         elif room_number == 203:
                 print("Welcome to our Meeting room!")
                 time.sleep(2)
@@ -207,6 +215,7 @@ def main():
                         break  # break statement escapes the while loop
                     else:  # if answer was wrong, and round is not yet equal to 3
                         print('Sorry. Try again!')
+        # task in room 204
         elif room_number == 204:
                 time.sleep(1)
                 # open directory ASCII file in read mode
@@ -219,14 +228,16 @@ def main():
                 print()
 
 
+                # check if user have enough coins to purchase
                 if coins < 1:
-                    print("Sorry, you don't have enough coins. Please find items in each room and exchange for coins here. See you later!")
+                    print("Sorry, you don't have enough coins. Please explore more rooms and get coins. See you later!")
                 elif coins >= 1:
                     exchange = input(
-                    f"Would you like something to drink? You've collected {coins} coins. Each beverage will cost 1 coin. Enter Y/N")
+                    f"Would you like something to drink? You've collected {coins} coins. Each beverage will cost 1 coin. Enter Y/N ")
 
+                    # user select from different beverage by enter different letters.
                     if exchange == 'Y':
-                        bev_choice=input(" We have [C]oke, [S]prite, [F]anta, [W]ater, and [L]emondade")
+                        bev_choice=input(" We have [C]oke, [S]prite, [F]anta, [W]ater, and [L]emondade ")
 
                         bev_dict={'C':'ASCII arts/coke.txt',
                             'S':'ASCII arts/sprite.txt',
@@ -244,14 +255,11 @@ def main():
                                 for svr in bevfile:
                                     # print and end without a newline
                                  print(svr, end="")
-
+                        print()
                         print("Here you go! Enjoy it!")
                         print("Thanks for purchasing! ")
-                        if coins >= 0:
-                            print(f"Now you have {coins} coins.")
-                        else:
-                            print(f"Now you don't have enough coins.")
-
+                        # show coins left
+                        print(f"Now you have {coins} coins.")
 
         # get user input
         movement = input('\nWhich direction do you want to go? Available directions for Room {}'.format(current_room['name']) + ' is: {}'.format(current_room['available_directions']) + '-->')
@@ -273,6 +281,8 @@ def main():
         else:
             print("Sorry, I don't understand that movement. Please select again.")
             time.sleep(1)
+
+
 
 
 if __name__ == "__main__":
