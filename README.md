@@ -7,10 +7,10 @@ A text-based application which allow users to move from room to room and experie
 
 * simple games
 * quizzes
-* check weather for a city in US
- * prompt the fig of 5 days forcasting 
+* check weather for a city in US from the API
+   * prompt the fig of 5 days forcasting 
 * use vending machine
- * elect the ASCII to display the choices of the drinks
+   * elect the ASCII to display the choices of the drinks
 
 ## How to Use 
 Run main.py in exploreTLGBuilding directory
