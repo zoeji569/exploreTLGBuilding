@@ -1,9 +1,3 @@
 Yesterday was: 2022-01-11, I learnt SOAP and RESTful API
 
 Yesterday was: 2022-01-12, I learnt Flask APIs and Jinja
-
-Yesterday was: 2022-01-12, And I learnt Keep Track of Everything You're Learning
-
-Yesterday was: 2022-01-12, Keep Track of Everything You're Learning
-
-Yesterday was: 2022-01-12, Q

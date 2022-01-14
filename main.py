@@ -3,11 +3,13 @@
 
 # imports
 import time # use time.sleep() in conversations
-from datetime import date # used in Room 103
-from datetime import timedelta # used in Room 103
+from datetime import datetime, date, timedelta # used in Room 103
 import crayons # highlight some conversations/words
 import requests # request API from OpenWeatherMap
-import config
+import config # "hide" private API Key
+from twython import Twython, TwythonError # "hide" private API Key
+import math
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -79,6 +81,7 @@ def main():
     # start the player in the lobby
     current_room = rooms['lobby']
     coins = 0
+    private_key = Twython(config.api_key)
 
     """called at runtime"""
     # open building ASCII file in read mode
@@ -97,7 +100,6 @@ def main():
 
     user_name=input("Please enter your name: ") # get user's name
     print(f"Hello, {user_name}! Welcome to TLG building!") # welcome message
-    time.sleep(1)
 
     while True:
         # display current location
@@ -116,7 +118,7 @@ def main():
         room_number = int(current_room['name'])
         # task in room 101
         if room_number == 101:
-            print(f"Nancy: Hello {user_name}, Happy learning!")
+            print(f"Nancy: Hello {user_name}, welcome to TLG! Please feel free to look around!")
         # task in room 102, user got 3 chances to guess correct numbers.
         elif room_number == 102:
             round = 0
@@ -124,95 +126,122 @@ def main():
                 round += 1
                 print("The door is locked... It has a 3-digit password, would you like to guess what it is?")
                 digit_1 = input(
-                        "Digit 1 :(Hint:Temperature in Rochester,New York on Feb 27th, 2020 was ___ degree °F. ) Your guess--> ")
+                        "Digit 1 :(Hint: Temperature in Rochester,New York on Feb 27th, 2020 was ___ degree °F. ) Your guess--> ")
                 digit_2 = input(
-                        "Digit 2: (Hint:How many instructors we've had so far since the Apprenticeship program started (Including Sam)?) Your guess--> ")
+                        "Digit 2: (Hint: How many instructors we've met so far since the Apprenticeship program started?) Your guess--> ")
                 digit_3 = input("Digit 3: (Sorry, no more hint :) Your guess--> ")
 
                 if digit_1 == '6' and digit_2 == '5' and digit_3 == '8':  # logic to check if user gave correct answer
                     print('Correct! You unlocked the door and found Jay sitting in there.')
                     print('Jay: You have a good memory! But it seems like I need to change my door password!')
                     print(
-                            'Jay throw you a book -- <Effective Java> and asked you to read it 10 times. Then Jay kicked you out from his office.')
+                            'Jay throw you a book -- <Effective Java> and asked you to read it 10 times before OJT. \nThen Jay kicked you out from his office.')
                     break  # break statement escapes the while loop
                 elif round == 3:  # logic to ensure round has not yet reached 3
                     print(
-                            'Sorry, you\'ve used all your chances. Now you\'ve triggered the alarm. Please go to another room so people won\'t catch ya!(You are welcome!)')
+                            'Sorry, you\'ve used all your chances. Now you\'ve triggered the alarm!! Please run to another room so people won\'t catch ya!(You are welcome!)')
                     break  # break statement escapes the while loop
                 else:  # if answer was wrong, and round is not yet equal to 3
-                    print('Sorry. Try again!')
+                    print('Password incorrect. Try again!')
 
         # task in room 103, user's input will be wrote to file stuff_i_learnt_yesterday.txt.
         elif room_number == 103:
-            learn=input(f"Nelly: Hi {user_name}, what did you learn last night?\nYou:")
+            learn=input(f"Nelly: Hi {user_name}, what did you learn yesterday?\nYou:")
             my_learn = open("stuff_i_learnt_yesterday.txt", "a")
             today = date.today()
             yesterday = today - timedelta(days = 1)
             my_learn.write(f"\nYesterday was: {yesterday}, {learn}\n")
             my_learn.close()
-            print("Nelly: Great to hear that! You can see your answer in file named: stuff_i_learnt_yesterday.txt.\nNelly: Keep track of everything you're learning, it's a good habit.")
+            print("Nelly: Great to hear that! You can see your answer in file named: stuff_i_learnt_yesterday.txt.\nNelly: Keep track of everything you're learning, it's a good habit. Good luck!")
         # task in room 201
         elif room_number == 201:
             print(f"Sam: Hi {user_name}! I hope you enjoyed this course!")
-            print(f"Sam: Sorry I'm busy watching your classmates' project, talk to you later!")
+            time.sleep(1)
+            print("Sam: Sorry I'm busy watching your classmates' presentation, I'll talk to you later!")
 
         # task in room 202. Use OpenWeatherMap API to get weather info when user enter City and State.
         elif room_number == 202:
-            print(f"John: Hi {user_name}! How are you? I'm planning to go some other city today, "
-                      f"do you have any suggestions?")
-            print("Please enter a city name of USA")
+            print(f"John: Hi {user_name}! How are you? I'm planning to have a vacation in some other city later this week, but I'm worry about the weather. "
+                      f"Do you have any suggestions?")
+            print("Please enter a city name and state code in USA")
             city = input("city: ")
             state = input("state: ")
-            print(f"John: Great! Wait a second and let me take a look of the weather there.")
-            api_url = "http://api.openweathermap.org/data/2.5/weather?"
-            look_url = api_url + "appid=" + config.api_key + "&q=" + city + "," + state + ",usa"
-            response = requests.get(look_url)
-            x = response.json()
+            api_url = "http://api.openweathermap.org/data/2.5/"
+            forecast_url = api_url + "forecast?q=" + city + "," + state + ",us&appid=" + config.api_key
+            response_forecast = requests.get(forecast_url)
+            data_forecast = response_forecast.json()
             # check for a 200 response
-            if x["cod"] == 200:
-                    y = x["main"]
-                    current_temperature = y["temp"]
-                    temp_in_f = (current_temperature - 273.15) * 9 / 5 + 32
-                    formatted_temp_in_f = "{:.2f}".format(temp_in_f)
-                    print(f"John: The temperature of {city}, {state} today is:\n{current_temperature} Kelvin, which is about {formatted_temp_in_f} °F.")
-                    if temp_in_f >= 90:
-                        print(f"It might be too hot to visit {city} now, I may go visit there next time! Thank you!")
-                    elif temp_in_f >= 70:
-                        print(f"It's pretty warm in {city}, nice weather for swimming! Thank you!")
-                    elif temp_in_f >= 50:
-                        print(f"It's a nice weather in {city}, great weather for outdoor activities! Thank you!")
-                    elif temp_in_f >= 40:
-                        print(f"It's a cool weather in {city}, I'll need to bring a jacket or a sweater. Thank you!")
-                    elif temp_in_f >= 10:
-                        print(f"It's pretty cold in {city}, I may need several layers on to be outside. Thank you!")
-                    elif temp_in_f < 10:
-                        print(f"Oh it's extremely cold in {city} now, I may go visit there next time! Thank you!")
+            if data_forecast["cod"] == "200":
+                data_dict = {data_forecast['list'][3]['dt_txt']: data_forecast['list'][3]['main']['temp'],
+                             data_forecast['list'][11]['dt_txt']: data_forecast['list'][11]['main']['temp'],
+                             data_forecast['list'][19]['dt_txt']: data_forecast['list'][19]['main']['temp'],
+                             data_forecast['list'][27]['dt_txt']: data_forecast['list'][27]['main']['temp'],
+                             data_forecast['list'][35]['dt_txt']: data_forecast['list'][35]['main']['temp']}
+
+                # fix the data format from API
+                dates = list(data_dict.keys())
+                fixed_date = [element[:-9] for element in dates]
+                temp_value = list(data_dict.values())
+                temp = [math.trunc((element - 273.15) * 9 / 5 + 32) for element in temp_value]
+
+                # create a new dictionary for terminal data.
+                zip_iterator = zip(fixed_date, temp)
+                fixed_dict = dict(zip_iterator)
+                # print a table which shows next 5 days temperature
+                print(f"Temperature in {city.upper()}, {state.upper()} for next 5 days:")
+                # Print the names of the columns.
+                print("{:<20} {:<15}".format('DATE', 'TEMP(°F)'))
+
+                # print each data item.
+                for key, value in fixed_dict.items():
+                    temperature = value
+                    print("{:<20} {:<15}".format(key, temperature))
+                print("John: Great! Thanks for your suggestion!")
+                print("(Please close the figure to move to another room.)")
+
+                # bar chart for next 5 days temperature
+                plt.figure(figsize=(9, 6))
+                plt.rc('axes', titlesize=20, labelsize=15)
+                plt.rc('xtick', labelsize=12)
+                plt.title(f'5-Day Temperature Forecast\n {city.upper()} , {state.upper()}')
+                plt.xlabel('Date')
+                plt.ylabel('Avg Temp [°F]')
+
+
+                plt.bar(fixed_date, temp)
+                for index, val in enumerate(temp):
+                    plt.text(x=index, y=val + 0.5, s=f"{val}" + "°F", fontdict=dict(fontsize=12))
+
+                plt.show()
+                plt.close()
+
             else:
-                    print(" City Not Found ")
+                    print("City Not Found ")
 
         # task in room 203
         elif room_number == 203:
                 print("Welcome to our Meeting room!")
-                time.sleep(2)
-                print("This room will be used by some guest from our partner company. You wanna check who's using it today?")
-                time.sleep(2)
+                time.sleep(1)
+                print("This room will be used by some guest from our partner company. Guess who's here today?")
+                time.sleep(1)
                 print("Amaris!!")
+                time.sleep(1)
+                print(f"Amaris: Hi {user_name}! Long time no see!\nToday, I have a quiz for you, you'll have 3 chances to answer.\nIf you cannot answer correcly, you may be failed from Apprentice program.")
                 time.sleep(2)
-                print(f"Amaris: Hi! Long time no see! Today, I have a quiz for you, You'll have 3 chances to answer. If you cannot answer correcly, you may be failed from Apprentice program.")
                 round = 0  # integer round initiated to 0
                 while True:  # sets up an infinite loop condition
                     round += 1  # increase the round counter
                     print('Which of the following is NOT one of Amazon\'s Leadership Principles? ''\n'
-                          'A-Invent and Simplify''\n'
-                          'B-Earn Trust''\n'
-                          'C-Have Backbone; Disagree and Commit''\n'
-                          'D-Spend money as much as you can')
+                          'A - Invent and Simplify''\n'
+                          'B - Earn Trust''\n'
+                          'C - Have Backbone; Disagree and Commit''\n'
+                          'D - Spend company\'s money as much as you like')
                     answer = input("Your guess--> ")  # string answer collected from user
                     if answer == 'D':  # logic to check if user gave correct answer
                         print('Correct!')
                         break  # break statement escapes the while loop
                     elif round == 3:  # logic to ensure round has not yet reached 3
-                        print('Sorry, the answer was D.')
+                        print('Sorry, the answer was D. Please go talk to your manager.')
                         break  # break statement escapes the while loop
                     else:  # if answer was wrong, and round is not yet equal to 3
                         print('Sorry. Try again!')
