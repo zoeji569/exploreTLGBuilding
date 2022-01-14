@@ -6,14 +6,11 @@ v1.0
 A text-based application which allow users to move from room to room and experience different tasks includes: 
 
 -simple games
-
 -quizzes
-
 -check weather for a city in US
-
+  -prompt the fig of 5 days forcasting 
 -use vending machine
-
--...
+  -elect the ASCII to display the choices of the drinks
 
 ## How to Use 
 Run main.py in exploreTLGBuilding directory
