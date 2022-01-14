@@ -189,6 +189,7 @@ def main():
                         print(f"Oh it's extremely cold in {city} now, I may go visit there next time! Thank you!")
             else:
                     print(" City Not Found ")
+            print("Wondering what is the weather looking like in next 5 days")
 
         # task in room 203
         elif room_number == 203:
