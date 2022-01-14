@@ -332,9 +332,9 @@ def main():
             with open(vm, 'r') as fr:
                 print(fr.read(), end='\n')
 
-                if coins < 1:
+                if coins < 3:
                     print("Sorry, you don't have enough coins. Please explore more rooms and get coins. See you later!")
-                elif coins >= 1:
+                elif coins >= 3:
                     exchange = input(
                         f"Would you like something to drink? You've collected {coins} coins. "
                         f"Each beverage will cost 1 coin. Enter Y/N ")
@@ -350,6 +350,7 @@ def main():
                             engLetters = message.upper()
                             print(message)
                             encrypt()
+                           
 
                         elif decision.upper() == 'Y':
                             bev_choice = input(
@@ -357,6 +358,7 @@ def main():
                             bev_choice = bev_choice.upper()
                             engLetters = bev_choice
                             encrypt()
+                            coin -= 2
 
                             bev_dict = {'COKE': path + "coke.txt",
                                         'SPRITE': path + 'sprite.txt',
